@@ -14,3 +14,8 @@ def k_in_num(k, num):
     False
     """
     "*** YOUR CODE HERE ***"
+    while num > 0:
+        if num % 10 == k:
+            return True
+        num //= 10
+    return False

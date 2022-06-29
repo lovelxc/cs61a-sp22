@@ -14,9 +14,9 @@ def a_plus_abs_b(a, b):
     3
     """
     if b < 0:
-        f = _____
+        def f(x, y): return x-y
     else:
-        f = _____
+        def f(x, y): return x+y
     return f(a, b)
 
 
@@ -44,7 +44,7 @@ def two_of_three(i, j, k):
     >>> two_of_three(5, 5, 5)
     50
     """
-    return _____
+    return min(i, j, k)**2 + (sorted([i, j, k])[1])**2
 
 
 def two_of_three_syntax_check():
@@ -69,3 +69,8 @@ def largest_factor(n):
     1
     """
     "*** YOUR CODE HERE ***"
+    k = 1
+    for i in range(1, n):
+        if n % i == 0:
+            k = i
+    return k
