@@ -123,3 +123,12 @@ def cycle(f1, f2, f3):
     19
     """
     "*** YOUR CODE HERE ***"
+    func_list = [f1, f2, f3]
+    def combinated1(k):
+        def combinated2(num):
+            ans = num
+            for i in range(k):
+                ans = func_list[i % len(func_list)](ans)
+            return ans
+        return combinated2
+    return combinated1
