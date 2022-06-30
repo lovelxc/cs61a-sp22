@@ -1,5 +1,6 @@
-# mycs61a
+# mycs61a(sp22)
 just record my learning. Dont copy!
+
 # 系统环境
 Machine: Ubuntu 20.04
 Python Version: 3.8.13(miniconda)

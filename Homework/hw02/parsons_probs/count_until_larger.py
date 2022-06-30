@@ -18,3 +18,11 @@ def count_until_larger(num):
     -1
     """
     "*** YOUR CODE HERE ***"
+    cnt, k = 1, num % 10
+    num //= 10
+    while num > 0:
+        if num % 10 > k:
+            return cnt
+        num //= 10
+        cnt += 1
+    return -1

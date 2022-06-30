@@ -1,12 +1,16 @@
 from operator import add, mul
 
-square = lambda x: x * x
 
-identity = lambda x: x
+def square(x): return x * x
 
-triple = lambda x: 3 * x
 
-increment = lambda x: x + 1
+def identity(x): return x
+
+
+def triple(x): return 3 * x
+
+
+def increment(x): return x + 1
 
 
 HW_SOURCE_FILE = __file__
@@ -32,6 +36,18 @@ def hailstone(n):
     1
     """
     "*** YOUR CODE HERE ***"
+    hai_list = []
+    while n > 1:
+        print(n)
+        hai_list.append(n)
+        if n % 2:  # 奇数
+            n = 3*n + 1
+        else:  # 偶数
+            n = n//2
+    else:
+        print(1)
+        hai_list.append(1)
+    return len(hai_list)
 
 
 def product(n, term):
@@ -54,6 +70,10 @@ def product(n, term):
     162
     """
     "*** YOUR CODE HERE ***"
+    k = 1
+    for i in range(1, n+1):
+        k *= term(i)
+    return k
 
 
 def accumulate(merger, start, n, term):
@@ -81,7 +101,9 @@ def accumulate(merger, start, n, term):
     16
     """
     "*** YOUR CODE HERE ***"
-
+    for i in range(1, n+1):
+        start = merger(start, term(i))
+    return start
 
 def summation_using_accumulate(n, term):
     """Returns the sum: term(1) + ... + term(n), using accumulate.
@@ -97,8 +119,8 @@ def summation_using_accumulate(n, term):
     >>> [type(x).__name__ for x in ast.parse(inspect.getsource(summation_using_accumulate)).body[0].body]
     ['Expr', 'Return']
     """
-    "*** YOUR CODE HERE ***"
-
+    # "*** YOUR CODE HERE ***"
+    return accumulate(add, 0, n, term)
 
 def product_using_accumulate(n, term):
     """Returns the product: term(1) * ... * term(n), using accumulate.
@@ -114,4 +136,5 @@ def product_using_accumulate(n, term):
     >>> [type(x).__name__ for x in ast.parse(inspect.getsource(product_using_accumulate)).body[0].body]
     ['Expr', 'Return']
     """
-    "*** YOUR CODE HERE ***"
+    # "*** YOUR CODE HERE ***"
+    return accumulate(mul, 1, n, term)
