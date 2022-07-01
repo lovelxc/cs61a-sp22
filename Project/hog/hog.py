@@ -160,6 +160,17 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     leader = None  # To be used in problem 7
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    while max(score0, score1) < goal:
+        if who == 0:
+            score0 += take_turn(strategy0(score0, score1), score0, score1, dice)
+            score0 += hog_pile(score0, score1)
+        else:
+            score1 += take_turn(strategy1(score1, score0), score1, score0, dice)
+            score1 += hog_pile(score1, score0)
+        who = next_player(who)
+        leader, msg = say(score0, score1, leader)
+        if msg != None and msg != '':
+            print(msg)
     # END PROBLEM 5
     # (note that the indentation for the problem 7 prompt (***YOUR CODE HERE***) might be misleading)
     # BEGIN PROBLEM 7
@@ -198,6 +209,12 @@ def announce_lead_changes(score0, score1, last_leader=None):
     """
     # BEGIN PROBLEM 6
     "*** YOUR CODE HERE ***"
+    now_leader = 0 if score0 > score1 else 1 
+    now_leader = None if score0 == score1 else now_leader
+    msg = f"Player {now_leader} takes the lead by {abs(score0 - score1)}"
+    if now_leader == None: msg =  None
+    elif last_leader != None and last_leader == now_leader: msg =  None
+    return now_leader, msg
     # END PROBLEM 6
 
 
