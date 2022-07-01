@@ -167,15 +167,15 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
         else:
             score1 += take_turn(strategy1(score1, score0), score1, score0, dice)
             score1 += hog_pile(score1, score0)
+        # (note that the indentation for the problem 7 prompt (***YOUR CODE HERE***) might be misleading)
+        # BEGIN PROBLEM 7
+        "*** YOUR CODE HERE ***"
         who = next_player(who)
         leader, msg = say(score0, score1, leader)
         if msg != None and msg != '':
             print(msg)
+        # END PROBLEM 7
     # END PROBLEM 5
-    # (note that the indentation for the problem 7 prompt (***YOUR CODE HERE***) might be misleading)
-    # BEGIN PROBLEM 7
-    "*** YOUR CODE HERE ***"
-    # END PROBLEM 7
     return score0, score1
 
 
