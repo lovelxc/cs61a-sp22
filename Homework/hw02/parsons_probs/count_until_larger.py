@@ -17,12 +17,13 @@ def count_until_larger(num):
     >>> count_until_larger(0) # .Case 6
     -1
     """
-    "*** YOUR CODE HERE ***"
-    cnt, k = 1, num % 10
-    num //= 10
+    cnt = 0
+    k = num % 10
     while num > 0:
         if num % 10 > k:
             return cnt
         num //= 10
         cnt += 1
     return -1
+
+

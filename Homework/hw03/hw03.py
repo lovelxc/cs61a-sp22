@@ -23,6 +23,7 @@ def num_eights(pos):
     True
     """
     "*** YOUR CODE HERE ***"
+    return int(pos%10 == 8) + num_eights(pos//10) if pos != 0 else 0
 
 
 def pingpong(n):
@@ -59,7 +60,15 @@ def pingpong(n):
     True
     """
     "*** YOUR CODE HERE ***"
-
+    # In this function, we may define a helper function to track some var
+    def helper(index, value, dir):
+        if index == n:
+            return value
+        else:
+            if index % 8 == 0 or num_eights(index) > 0:
+                return helper(index+1, value-dir, -dir)
+            else: return helper(index+1, value+dir, dir)
+    return helper(1, 1, 1)
 
 def get_larger_coin(coin):
     """Returns the next larger coin in order.
@@ -115,3 +124,20 @@ def count_coins(change):
     True
     """
     "*** YOUR CODE HERE ***"
+    def func(num_change, n):
+        """func(num_change, n)表示: 在使用面额大于等于n的硬币的条件下, 有几种兑换num_change的方法
+        with_max 表示继续使用面额为n的硬币进行找零
+        notwith_max 表示不再使用面额为n的硬币, 之后只能使用面额更大的硬币进行找零
+        中心思想: 为了避免重复计算, 要用with_max和notwith_max分开计算两种情况下的找零方法,
+        否则会有重复计算的风险. 事实上也可以使用func(change, 25), 只不过在func里就要用get_smaller_coin
+        """
+        if num_change == 0:
+            return 1
+        elif num_change < 0 or n == None:
+            return 0
+        else:
+            notwith_max = func(num_change, get_larger_coin(n))
+            with_max = func(num_change - n, n)
+            print("DEBUG:", num_change, n, with_max, notwith_max)
+            return with_max + notwith_max
+    return func(change, 1)
