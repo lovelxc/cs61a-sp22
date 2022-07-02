@@ -107,7 +107,8 @@ def take_turn(num_rolls, player_score, opponent_score, dice=six_sided, goal=GOAL
     assert max(player_score, opponent_score) < goal, 'The game should be over.'
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
-    return hefty_hogs(player_score, opponent_score) if num_rolls == 0 else roll_dice(num_rolls, dice)
+    return hefty_hogs(player_score, 
+        opponent_score) if num_rolls == 0 else roll_dice(num_rolls, dice)
     # END PROBLEM 3
 
 
@@ -281,6 +282,10 @@ def make_averaged(original_function, total_samples=1000):
     """
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    def combinated(*args):
+        return sum([original_function(*args) 
+            for _ in range(total_samples)]) / total_samples
+    return combinated
     # END PROBLEM 8
 
 
@@ -295,6 +300,13 @@ def max_scoring_num_rolls(dice=six_sided, total_samples=1000):
     """
     # BEGIN PROBLEM 9
     "*** YOUR CODE HERE ***"
+    max_avg, idx = 0.0, 0
+    for i in range(1, 11):
+        tmp = sum([roll_dice(i, dice) # a new dice's life cycle in roll_dice, not in this func
+            for _ in range(total_samples)]) / total_samples
+        if tmp > max_avg:
+            max_avg, idx = tmp, i
+    return idx
     # END PROBLEM 9
 
 
@@ -321,12 +333,13 @@ def run_experiments():
     """Run a series of strategy experiments and report results."""
     six_sided_max = max_scoring_num_rolls(six_sided)
     print('Max scoring num rolls for six-sided dice:', six_sided_max)
-    print('always_roll(6) win rate:', average_win_rate(always_roll(6)))
+    times = 6
+    print(f'always_roll({times}) win rate:', average_win_rate(always_roll(times)))
 
     #print('always_roll(8) win rate:', average_win_rate(always_roll(8)))
-    #print('hefty_hogs_strategy win rate:', average_win_rate(hefty_hogs_strategy))
+    print('hefty_hogs_strategy win rate:', average_win_rate(hefty_hogs_strategy))
     print('hog_pile_strategy win rate:', average_win_rate(hog_pile_strategy))
-    #print('final_strategy win rate:', average_win_rate(final_strategy))
+    print('final_strategy win rate:', average_win_rate(final_strategy))
     "*** You may add additional experiments as you wish ***"
 
 
@@ -335,7 +348,7 @@ def hefty_hogs_strategy(score, opponent_score, threshold=8, num_rolls=6):
     returns NUM_ROLLS otherwise.
     """
     # BEGIN PROBLEM 10
-    return 6  # Remove this line once implemented.
+    return 0 if hefty_hogs(score, opponent_score) >= threshold else num_rolls
     # END PROBLEM 10
 
 
@@ -345,7 +358,10 @@ def hog_pile_strategy(score, opponent_score, threshold=8, num_rolls=6):
     Otherwise, it returns NUM_ROLLS.
     """
     # BEGIN PROBLEM 11
-    return 6  # Remove this line once implemented.
+    mark = hefty_hogs(score, opponent_score)
+    # when hog_pile takes effect, opponent_score%10 should't be 0
+    return 0 if ((mark + score)%10 == opponent_score%10 and opponent_score%10 != 0)\
+        or mark >= threshold else num_rolls
     # END PROBLEM 11
 
 
@@ -355,7 +371,15 @@ def final_strategy(score, opponent_score):
     *** YOUR DESCRIPTION HERE ***
     """
     # BEGIN PROBLEM 12
-    return 6  # Remove this line once implemented.
+    hefty_hogs_score = hefty_hogs(score, opponent_score)
+    if score + hefty_hogs_score >= GOAL_SCORE or\
+        score + hefty_hogs_score + hog_pile(
+        hefty_hogs_score + score, opponent_score) >= GOAL_SCORE:
+        return 0
+    elif score / GOAL_SCORE >= 0.9 and opponent_score / GOAL_SCORE < 0.75:
+        return 6
+    else:
+        return hefty_hogs_strategy(score, opponent_score)
     # END PROBLEM 12
 
 ##########################
