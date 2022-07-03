@@ -125,7 +125,8 @@ def count_coins(change):
     """
     "*** YOUR CODE HERE ***"
     def func(num_change, n):
-        """func(num_change, n)表示: 在使用面额大于等于n的硬币的条件下, 有几种兑换num_change的方法
+        """Copied from somewhere
+        func(num_change, n)表示: 在使用面额大于等于n的硬币的条件下, 有几种兑换num_change的方法
         with_max 表示继续使用面额为n的硬币进行找零
         notwith_max 表示不再使用面额为n的硬币, 之后只能使用面额更大的硬币进行找零
         中心思想: 为了避免重复计算, 要用with_max和notwith_max分开计算两种情况下的找零方法,
