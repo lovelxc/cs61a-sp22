@@ -197,7 +197,7 @@ def sphinx_swaps(start, goal, limit):
         return len(goal) or len(start)
     else:
         is_not_equal = (start[0] != goal[0])
-        return is_not_equal + sphinx_swaps(start[1:], goal[1:], limit-is_not_equal)g
+        return is_not_equal + sphinx_swaps(start[1:], goal[1:], limit-is_not_equal)
     # END PROBLEM 6
 
 
