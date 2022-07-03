@@ -31,6 +31,13 @@ def choose(paragraphs, select, k):
     """
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
+    idx = 0
+    for s in paragraphs:
+        if select(s):
+            if idx == k:
+                return s
+            idx += 1
+    return ''
     # END PROBLEM 1
 
 
@@ -50,6 +57,10 @@ def about(topic):
     assert all([lower(x) == x for x in topic]), 'topics should be lowercase.'
     # BEGIN PROBLEM 2
     "*** YOUR CODE HERE ***"
+    def func(s):
+        s = lower(remove_punctuation(s))
+        return len(set(split(s)) & set(topic)) > 0
+    return func
     # END PROBLEM 2
 
 
@@ -80,6 +91,14 @@ def accuracy(typed, reference):
     reference_words = split(reference)
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
+    if len(reference_words) == 0:
+        return 100. if len(typed_words) == 0 else 0.
+    elif len(typed_words) == 0 and len(reference_words) > 0:
+        return 0.
+    words_max = 0
+    for t, r in zip(typed_words, reference_words):
+        if t == r: words_max += 1
+    return (words_max / len(typed_words)) * 100
     # END PROBLEM 3
 
 
@@ -98,6 +117,7 @@ def wpm(typed, elapsed):
     assert elapsed > 0, 'Elapsed time must be positive'
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    return ((len(typed) / 5) * 60) / elapsed
     # END PROBLEM 4
 
 
@@ -125,6 +145,16 @@ def autocorrect(typed_word, word_list, diff_function, limit):
     """
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    diff_min = 1 << 31
+    ans = ''
+    for w in word_list:
+        if w == typed_word: return typed_word
+        diff = diff_function(typed_word, w, limit)
+        if diff < diff_min:
+            diff_min = diff
+            ans = w
+    return ans if diff_min <= limit else typed_word
+
     # END PROBLEM 5
 
 
@@ -151,7 +181,23 @@ def sphinx_swaps(start, goal, limit):
     5
     """
     # BEGIN PROBLEM 6
-    assert False, 'Remove this line'
+    # To record the substitute times, we use a helper func.
+    # def helper(s, g, t):
+    #     if t > limit: return t
+    #     # only 4 conditions
+    #     if len(s) > 0 and len(g) > 0:
+    #         return helper(s[1:], g[1:], t + int(s[0] != g[0]))
+    #     else: 
+    #         return t + (len(g) or len(s))
+    # return helper(start, goal, 0)
+    # get idea from the next function
+    if limit < 0:
+        return 0
+    if len(start) == 0 or len(goal) == 0:
+        return len(goal) or len(start)
+    else:
+        is_not_equal = (start[0] != goal[0])
+        return is_not_equal + sphinx_swaps(start[1:], goal[1:], limit-is_not_equal)g
     # END PROBLEM 6
 
 
@@ -172,31 +218,38 @@ def minimum_mewtations(start, goal, limit):
     >>> minimum_mewtations("ckiteus", "kittens", big_limit) # ckiteus -> kiteus -> kitteus -> kittens
     3
     """
-    assert False, 'Remove this line'
-
-    if ______________:  # Fill in the condition
+    # Copied from somewhere. [https://github.com/chenyuxiang0425/cs61a_sp20/blob/master/cats/cats.py]
+    # similar to the recursive call in sphinx_swaps
+    if limit < 0:  # Fill in the condition
         # BEGIN
         "*** YOUR CODE HERE ***"
+        return 0
         # END
 
-    elif ___________:  # Feel free to remove or add additional cases
+    elif len(start) == 0 or len(goal) == 0:  # Feel free to remove or add additional cases
         # BEGIN
         "*** YOUR CODE HERE ***"
+        return len(goal) or len(start)
         # END
 
+    elif start[0] == goal[0]:
+        return minimum_mewtations(start[1:], goal[1:], limit)
     else:
-        add = ...  # Fill in these lines
-        remove = ...
-        substitute = ...
+        add = minimum_mewtations(start, goal[1:], limit-1)  # Fill in these lines
+        remove = minimum_mewtations(start[1:], goal, limit-1)
+        substitute = minimum_mewtations(start[1:], goal[1:], limit-1)
         # BEGIN
         "*** YOUR CODE HERE ***"
+        # plus 1 means we have implement one of the three operations above.
+        return min(add, remove, substitute) + 1 
         # END
 
 
 def final_diff(start, goal, limit):
     """A diff function that takes in a string START, a string GOAL, and a number LIMIT.
     If you implement this function, it will be used."""
-    assert False, 'Remove this line to use your final_diff function.'
+    # return min(limit+1, abs(len(start)-len(goal)))
+    return sphinx_swaps(start, goal, limit)
 
 
 FINAL_DIFF_LIMIT = 6  # REPLACE THIS WITH YOUR LIMIT
