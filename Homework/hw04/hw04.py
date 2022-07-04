@@ -66,7 +66,7 @@ class Mint:
 
     def update(self):
         "*** YOUR CODE HERE ***"
-        self.year = self.present_year
+        self.year = Mint.present_year
 
 
 class Coin:
