@@ -18,7 +18,15 @@ def flatten(s):
     [[1, [1, 1]], 1, [1, 1]]
     """
     "*** YOUR CODE HERE ***"
-
+    def helper(lst, ans):
+        for t in lst:
+            if type(t) == list:
+                helper(t, ans)
+            else:
+                ans.append(t)
+        if lst == s:
+            return ans
+    return helper(s, [])
 
 def couple(s, t):
     """Return a list of two-element lists in which the i-th element is [s[i], t[i]].
@@ -34,6 +42,7 @@ def couple(s, t):
     """
     assert len(s) == len(t)
     "*** YOUR CODE HERE ***"
+    return [[s[i], t[i]] for i in range(len(s))]
 
 
 def insert_items(lst, entry, elem):
@@ -63,6 +72,13 @@ def insert_items(lst, entry, elem):
     True
     """
     "*** YOUR CODE HERE ***"
+    idx = 0
+    while idx < len(lst):
+        if lst[idx] == entry:
+            lst.insert(idx + 1, elem)
+            idx += 1
+        idx += 1
+    return lst
 
 
 def change_abstraction(change):
