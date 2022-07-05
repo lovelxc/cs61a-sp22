@@ -26,9 +26,12 @@ class NoisyCat(Cat):
     >>> friend_cat.lives
     1
     """
-
     def __init__(self, name, owner, lives=9):
-        "*** YOUR CODE HERE ***"
-
+        super().__init__(name, owner, lives)
+        self.lives -= 1
     def talk(self):
-        "*** YOUR CODE HERE ***"
+        words = super().talk()
+        words = words + f' {words}'
+        return words
+
+
