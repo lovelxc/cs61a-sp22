@@ -1,6 +1,7 @@
 """CS 61A presents Ants Vs. SomeBees."""
 
 import random
+from telnetlib import NOP
 from ucb import main, interact, trace
 from collections import OrderedDict
 
@@ -54,6 +55,7 @@ class Insect:
 
     damage = 0
     # ADD CLASS ATTRIBUTES HERE
+    is_waterproof = False
 
     def __init__(self, health, place=None):
         """Create an Insect with a health amount and a starting PLACE."""
@@ -110,6 +112,7 @@ class Ant(Insect):
 
     def __init__(self, health=1):
         """Create an Insect with a HEALTH quantity."""
+        self.is_doubled = False
         super().__init__(health)
 
     @classmethod
@@ -160,6 +163,9 @@ class Ant(Insect):
         """Double this ants's damage, if it has not already been doubled."""
         # BEGIN Problem 12
         "*** YOUR CODE HERE ***"
+        if not self.is_doubled:
+            self.damage <<= 1 # mul two
+            self.is_doubled = True
         # END Problem 12
 
 
@@ -428,16 +434,26 @@ class Water(Place):
         its health to 0."""
         # BEGIN Problem 10
         "*** YOUR CODE HERE ***"
+        super().add_insect(insect)
+        if not insect.is_waterproof:
+            insect.reduce_health(insect.health)
         # END Problem 10
 
 # BEGIN Problem 11
 # The ScubaThrower class
+class ScubaThrower(ThrowerAnt):
+    """ScubaThrower is waterproof."""
+
+    name = 'Scuba'
+    food_cost = 6
+    is_waterproof = True
+    implemented = True   # Change to True to view in the GUI
 # END Problem 11
 
 # BEGIN Problem 12
 
 
-class QueenAnt(Ant):  # You should change this line
+class QueenAnt(ScubaThrower):  # You should change this line
 # END Problem 12
     """The Queen of the colony. The game is over if a bee enters her place."""
 
@@ -445,7 +461,7 @@ class QueenAnt(Ant):  # You should change this line
     food_cost = 7
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Problem 12
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem 12
 
     @classmethod
@@ -456,6 +472,11 @@ class QueenAnt(Ant):  # You should change this line
         """
         # BEGIN Problem 12
         "*** YOUR CODE HERE ***"
+        if not gamestate.has_queen:
+            ans = super().construct(gamestate)
+            if ans:
+                gamestate.has_queen = True
+                return ans
         # END Problem 12
 
     def action(self, gamestate):
@@ -464,6 +485,14 @@ class QueenAnt(Ant):  # You should change this line
         """
         # BEGIN Problem 12
         "*** YOUR CODE HERE ***"
+        place = self.place.exit # ants behind her
+        while place.exit:
+            if place.ant:
+                place.ant.double()
+                if place.ant.is_container and place.ant.ant_contained:
+                    place.ant.ant_contained.double()
+            place = place.exit
+        super().action(gamestate)
         # END Problem 12
 
     def reduce_health(self, amount):
@@ -472,7 +501,13 @@ class QueenAnt(Ant):  # You should change this line
         """
         # BEGIN Problem 12
         "*** YOUR CODE HERE ***"
+        if self.health <= amount:
+            ants_lose()
+        super().reduce_health(amount)
         # END Problem 12
+
+    def remove_from(self, place):
+        NOP
 
 
 class AntRemover(Ant):
@@ -491,6 +526,7 @@ class Bee(Insect):
     name = 'Bee'
     damage = 1
     # OVERRIDE CLASS ATTRIBUTES HERE
+    is_waterproof = True
 
     def sting(self, ant):
         """Attack an ANT, reducing its health by 1."""
@@ -534,6 +570,7 @@ class Bee(Insect):
         """Slow the bee for a further LENGTH turns."""
         # BEGIN Problem EC
         "*** YOUR CODE HERE ***"
+        
         # END Problem EC
 
     def scare(self, length):
@@ -579,7 +616,7 @@ class SlowThrower(ThrowerAnt):
     name = 'Slow'
     food_cost = 4
     # BEGIN Problem EC
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem EC
 
     def throw_at(self, target):
@@ -593,7 +630,7 @@ class ScaryThrower(ThrowerAnt):
     name = 'Scary'
     food_cost = 6
     # BEGIN Problem EC
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem EC
 
     def throw_at(self, target):
@@ -740,6 +777,7 @@ class GameState:
         self.ant_types = OrderedDict((a.name, a) for a in ant_types)
         self.dimensions = dimensions
         self.active_bees = []
+        self.has_queen = False
         self.configure(beehive, create_places)
 
     def configure(self, beehive, create_places):

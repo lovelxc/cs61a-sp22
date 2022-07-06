@@ -1,3 +1,6 @@
 .vscode/
 **/__pycache__
 .ok_*
+correctness
+test_log
+*_repr
