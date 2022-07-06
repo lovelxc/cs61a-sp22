@@ -5,7 +5,7 @@ def midsem_survey(p):
     """
     You do not need to understand this code.
     >>> midsem_survey(passphrase)
-    '6b11cc4633eb00f582dcc3a83f713aef58d85a1900d7cd9881d60e76'
+    '9c557774afa3f7b5670f10a5ca54be0eedb8384a780375daa0340b45'
     """
     import hashlib
     return hashlib.sha224(p.encode('utf-8')).hexdigest()
@@ -43,6 +43,13 @@ def has_path(t, term):
     """
     assert len(term) > 0, 'no path for empty term.'
     "*** YOUR CODE HERE ***"
+    if len(term) == 1:
+        return t.label == term
+    elif t.label == term[0]:
+        for b in t.branches:
+            if has_path(b, term[1:]):
+                return True
+    return False
 
 
 def duplicate_link(lnk, val):
@@ -61,6 +68,22 @@ def duplicate_link(lnk, val):
     Link(2, Link(4, Link(6, Link(8))))
     """
     "*** YOUR CODE HERE ***"
+    # print(lnk.first)
+    if lnk.rest is not Link.empty:
+        duplicate_link(lnk.rest, val)
+    if lnk.first == val:
+        # 1. lnk = Link(val, lnk)   # wrong answer
+        # 2. lnk.rest = lnk         # lnk's tail point its head
+        lnk.rest = Link(lnk.first, lnk.rest)  # create a new Link
+        lnk.first = val
+    """
+    Codes as followed can also pass the doctest. But it's wrong.
+    if lnk.first == val:
+        lnk.rest = Link(lnk.first, lnk.rest)  # create a new Link
+        lnk.first = val
+    elif lnk.rest is not Link.empty:
+        duplicate_link(lnk.rest, val)
+    """
 
 
 def deep_map_mut(fn, lnk):
@@ -81,6 +104,12 @@ def deep_map_mut(fn, lnk):
     <9 <16> 25 36>
     """
     "*** YOUR CODE HERE ***"
+    if isinstance(lnk.first, Link):
+        deep_map_mut(fn, lnk.first)
+    else:
+        lnk.first = fn(lnk.first)
+    if lnk.rest is not Link.empty:
+        deep_map_mut(fn, lnk.rest)
 
 
 class Tree:
