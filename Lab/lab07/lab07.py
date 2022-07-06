@@ -15,6 +15,11 @@ def store_digits(n):
     >>> link1 = Link(3, Link(Link(4), Link(5, Link(6))))
     """
     "*** YOUR CODE HERE ***"
+    lnk = Link.empty
+    while not 0 <= n < 10:
+        lnk = Link(n % 10, lnk)
+        n //= 10
+    return Link(n, lnk)
 
 
 def cumulative_mul(t):
@@ -31,7 +36,13 @@ def cumulative_mul(t):
     Tree(5040, [Tree(60, [Tree(3), Tree(4), Tree(5)]), Tree(42, [Tree(7)])])
     """
     "*** YOUR CODE HERE ***"
-
+    def helper(_t):
+        for b in _t.branches:
+          _t.label *= helper(b)
+        return _t.label
+    
+    for b in t.branches:
+        t.label *= helper(b)
 
 def has_cycle(link):
     """Return whether link contains a cycle.
@@ -48,6 +59,14 @@ def has_cycle(link):
     False
     """
     "*** YOUR CODE HERE ***"
+    lnk_list = set()
+    while link:
+        if link not in lnk_list:
+            lnk_list.add(link)
+            link = link.rest
+        else:
+            return True
+    return False
 
 
 def has_cycle_constant(link):
@@ -60,9 +79,26 @@ def has_cycle_constant(link):
     >>> t = Link(1, Link(2, Link(3)))
     >>> has_cycle_constant(t)
     False
+    >>> # add tests
+    >>> t = Link(1, Link(2))
+    >>> t.rest.rest = t
+    >>> has_cycle_constant(t)
+    True
+    >>> t = Link(1, Link(2, Link(3, Link(4))))
+    >>> t.rest.rest.rest = t.rest
+    >>> has_cycle_constant(t)
+    True
     """
     "*** YOUR CODE HERE ***"
-
+    """Like pursuit problem, if link_rest can reach the link
+    which means the original link has a cycle, then return True"""
+    link_rest = link.rest
+    while link_rest and link_rest.rest:
+        if link_rest.rest is link:
+            return True
+        link_rest = link_rest.rest.rest
+        link = link.rest
+    return False
 
 class Link:
     """A linked list.
