@@ -1,3 +1,6 @@
+from curses import nonl
+
+
 def repeated(t, k):
     """Return the first value in iterator T that appears K times in a row.
     Iterate through the items such that if the same iterator is passed into
@@ -18,9 +21,30 @@ def repeated(t, k):
     >>> s2 = iter([4, 1, 6, 6, 7, 7, 8, 8, 2, 2, 2, 5])
     >>> repeated(s2, 3)
     2
+    >>> # add doctests
+    >>> t = iter([4, 4, 6, 6, 7, 7, 2, 2, 2, 5])
+    >>> repeated(t, 2)
+    4
+    >>> repeated(t, 2)
+    6
+    >>> repeated(t, 2)
+    7
+    >>> repeated(t, 3)
+    2
     """
     assert k > 1
     "*** YOUR CODE HERE ***"
+    last = next(t)
+    cnt = 1
+    while True:
+        n = next(t)
+        if n == last:
+            cnt += 1
+            if cnt == k:
+                return n
+        else:
+            cnt = 1
+        last = n
 
 
 def merge(incr_a, incr_b):
@@ -37,12 +61,38 @@ def merge(incr_a, incr_b):
     ...    k = 0
     ...    while True: yield k; k += n
     >>> m = merge(big(2), big(3))
-    >>> [next(m) for _ in range(11)]
-    [0, 2, 3, 4, 6, 8, 9, 10, 12, 14, 15]
+    >>> [next(m) for _ in range(13)]
+    [0, 2, 3, 4, 6, 8, 9, 10, 12, 14, 15, 16, 18]
+    >>> # add doctests
+    >>> m = merge([0, 2, 4, 6, 6, 8, 8, 10, 12, 14, 14], [0, 1, 3, 3, 6, 6, 199, 200])
+    >>> list(m)
+    [0, 1, 2, 3, 4, 6, 8, 10, 12, 14, 199, 200]
+    >>> m = merge([0, 2, 4, 14, 199, 200], [0, 1, 3, 3, 6, 6])
+    >>> list(m)
+    [0, 1, 2, 3, 4, 6, 14, 199, 200]
     """
     iter_a, iter_b = iter(incr_a), iter(incr_b)
     next_a, next_b = next(iter_a, None), next(iter_b, None)
     "*** YOUR CODE HERE ***"
+    last = not next_a and not next_b
+
+    while not (next_a is None and next_b is None):
+        if next_b is None:
+            n = next_a
+            next_a = next(iter_a, None)
+        elif next_a is None:
+            n = next_b
+            next_b = next(iter_b, None)
+        # both next_a and next_b are not None.
+        elif next_a < next_b:
+            n = next_a
+            next_a = next(iter_a, None)
+        else:
+            n = next_b
+            next_b = next(iter_b, None)
+        if n != last:
+            last = n
+            yield n
 
 
 def deep_len(lnk):
@@ -59,12 +109,12 @@ def deep_len(lnk):
     >>> deep_len(levels)
     5
     """
-    if ______________:
+    if lnk is Link.empty:
         return 0
-    elif ______________:
+    elif isinstance(lnk, (int, float)):
         return 1
     else:
-        return _________________________
+        return deep_len(lnk.first) + deep_len(lnk.rest)
 
 
 def add_d_leaves(t, v):
@@ -126,6 +176,12 @@ def add_d_leaves(t, v):
         10
     """
     "*** YOUR CODE HERE ***"
+    def bfs(tree, d):
+        for b in tree.branches:
+            bfs(b, d + 1)
+        tree.branches.extend([Tree(v) for _ in range(d)])
+
+    bfs(t, 0)
 
 
 def insert_into_all(item, nested_list):
@@ -138,7 +194,16 @@ def insert_into_all(item, nested_list):
     [[0], [0, 1, 2], [0, 3]]
     """
     "*** YOUR CODE HERE ***"
-
+    """Do not mutate the origin lst.
+    Copied from somewhere. [https://github.com/PKUFlyingPig/CS61A/blob/d385f3ccc78df3d2f7214185d9fc2f1524d26eb2/labs/lab07/lab07.py]
+    """
+    ans = []
+    for lst in nested_list:
+        assert isinstance(lst, list), f'{lst} is not a list!'
+        new_lst = lst.copy()
+        new_lst.insert(0, item)
+        ans.append(new_lst)
+    return ans
 
 def subseqs(s):
     """Return a nested list (a list of lists) of all subsequences of S.
@@ -150,11 +215,12 @@ def subseqs(s):
     >>> subseqs([])
     [[]]
     """
-    if ________________:
-        ________________
+    # Copied from somewhere. [https://github.com/PKUFlyingPig/CS61A/blob/d385f3ccc78df3d2f7214185d9fc2f1524d26eb2/labs/lab07/lab07.py]
+    if len(s) == 0:
+        return [[]]
     else:
-        ________________
-        ________________
+        all_but_first_subseqs = subseqs(s[1:])
+        return all_but_first_subseqs + insert_into_all(s[0], all_but_first_subseqs)
 
 
 def non_decrease_subseqs(s):
@@ -173,14 +239,14 @@ def non_decrease_subseqs(s):
     """
     def subseq_helper(s, prev):
         if not s:
-            return ____________________
+            return [[]]
         elif s[0] < prev:
-            return ____________________
+            return subseq_helper(s[1:], prev)
         else:
-            a = ______________________
-            b = ______________________
-            return insert_into_all(________, ______________) + ________________
-    return subseq_helper(____, ____)
+            a = subseq_helper(s[1:], prev)
+            b = subseq_helper(s[1:], s[0])
+            return insert_into_all(s[0], b) + a
+    return subseq_helper(s, -1)
 
 
 def card(n):
@@ -209,11 +275,11 @@ def shuffle(cards):
     ['AH', 'AD', 'AS', 'AC', '2H', '2D', '2S', '2C', '3H', '3D', '3S', '3C']
     """
     assert len(cards) % 2 == 0, 'len(cards) must be even'
-    half = _______________
+    half = cards[len(cards) // 2:]
     shuffled = []
-    for i in _____________:
-        _________________
-        _________________
+    for i in range(len(cards) // 2):
+        shuffled.append(cards[i])
+        shuffled.append(half[i])
     return shuffled
 
 
@@ -235,6 +301,9 @@ def pairs(lst):
     5 5
     """
     "*** YOUR CODE HERE ***"
+    for i in lst:
+        for j in lst:
+            yield i, j
 
 
 class PairsIterator:
@@ -255,12 +324,22 @@ class PairsIterator:
 
     def __init__(self, lst):
         "*** YOUR CODE HERE ***"
+        self.lst = list(lst)
 
     def __next__(self):
         "*** YOUR CODE HERE ***"
+        if self.j == len(self.lst) - 1:
+            if self.i == len(self.lst) - 1:
+                raise StopIteration
+            self.i, self.j = self.i + 1, 0
+        else:
+            self.j += 1
+        return self.lst[self.i], self.lst[self.j]
 
     def __iter__(self):
         "*** YOUR CODE HERE ***"
+        self.i, self.j = 0, -1
+        return self
 
 
 def long_paths(tree, n):
@@ -293,6 +372,15 @@ def long_paths(tree, n):
     [Link(0, Link(11, Link(12, Link(13, Link(14)))))]
     """
     "*** YOUR CODE HERE ***"
+    def helper(t, d):
+        if not t.branches and d > n:
+            return [Link(t.label)]
+        lst = []
+        for b in t.branches:
+            node_list = helper(b, d + 1)
+            lst.extend([Link(t.label, node) for node in node_list])
+        return lst
+    return helper(tree, 1)
 
 
 def flip_two(s):
@@ -305,11 +393,27 @@ def flip_two(s):
     >>> flip_two(lnk)
     >>> lnk
     Link(2, Link(1, Link(4, Link(3, Link(5)))))
+    >>> # add doctests
+    >>> lnk = Link(1, Link(2, Link(3, Link(4))))
+    >>> flip_two(lnk)
+    >>> lnk
+    Link(2, Link(1, Link(4, Link(3))))
     """
     "*** YOUR CODE HERE ***"
-
+    if s.rest:
+        s.first, s.rest.first = s.rest.first, s.first
+        if s.rest.rest:
+            flip_two(s.rest.rest)
     # For an extra challenge, try writing out an iterative approach as well below!
     "*** YOUR CODE HERE ***"
+    """
+    is_switch = True
+    while s.rest:
+        if is_switch:
+            s.first, s.rest.first = s.rest.first, s.first
+        s = s.rest
+        is_switch = not is_switch
+    """
 
 
 class Link:
