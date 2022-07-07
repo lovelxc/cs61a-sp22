@@ -1,6 +1,7 @@
 # Magic the Lambda-ing!
 
 import random
+from tkinter.tix import Tree
 
 
 class Card:
@@ -25,6 +26,9 @@ class Card:
         """
         # BEGIN Problem 1
         "*** YOUR CODE HERE ***"
+        self.name = name
+        self.attack = attack
+        self.defense = defense
         # END Problem 1
 
     def power(self, opponent_card):
@@ -45,6 +49,7 @@ class Card:
         """
         # BEGIN Problem 1
         "*** YOUR CODE HERE ***"
+        return self.attack - opponent_card.defense
         # END Problem 1
 
     def effect(self, opponent_card, player, opponent):
@@ -74,10 +79,10 @@ class Player:
         A Player starts the game by drawing 5 cards from their deck. Each turn,
         a Player draws another card from the deck and chooses one to play.
         >>> test_card = Card('test', 100, 100)
-        >>> test_deck = Deck([test_card.copy() for _ in range(6)])
+        >>> test_deck = Deck([test_card.copy() for _ in range(10)])
         >>> test_player = Player(test_deck, 'tester')
         >>> len(test_deck.cards)
-        1
+        5
         >>> len(test_player.hand)
         5
         """
@@ -85,6 +90,7 @@ class Player:
         self.name = name
         # BEGIN Problem 2
         "*** YOUR CODE HERE ***"
+        self.hand = [self.deck.draw() for _ in range(5)]
         # END Problem 2
 
     def draw(self):
@@ -101,6 +107,7 @@ class Player:
         assert not self.deck.is_empty(), 'Deck is empty!'
         # BEGIN Problem 2
         "*** YOUR CODE HERE ***"
+        self.hand.append(self.deck.draw())
         # END Problem 2
 
     def play(self, index):
@@ -119,6 +126,8 @@ class Player:
         """
         # BEGIN Problem 2
         "*** YOUR CODE HERE ***"
+        assert 0<=index<len(self.hand), f"Player {self.name} has no card in hand."
+        return self.hand.pop(index)
         # END Problem 2
 
     def display_hand(self):
@@ -159,6 +168,8 @@ class AICard(Card):
         """
         # BEGIN Problem 3
         "*** YOUR CODE HERE ***"
+        for _ in range(2):
+            player.hand.append(player.deck.draw())
         # END Problem 3
         # You should add your implementation above this.
         print(f"{self.name} allows me to draw two cards!")
@@ -202,10 +213,16 @@ class TutorCard(Card):
         """
         # BEGIN Problem 4
         added = None
+        if player.hand:
+            added = player.hand[0].copy()
+            player.hand.append(added)
         # END Problem 4
         # You should add your implementation above this.
         if added:
             print(f"{self.name} allows me to add a copy of a card to my hand!")
+    
+    def power(self, opponent_card):
+        return -float('inf')
 
     def copy(self):
         """
@@ -241,6 +258,15 @@ class TACard(Card):
         """
         # BEGIN Problem 5
         best_card = None
+        if player.hand:
+            highest_power, index = -float('inf'), 0
+            for i, v in enumerate(player.hand):
+                if v.power(opponent_card) > highest_power:
+                    highest_power = v.power(opponent_card)
+                    index = i
+            best_card = player.play(index)
+            self.attack += best_card.attack
+            self.defense += best_card.defense
         # END Problem 5
         if best_card:
             print(f"{self.name} discards {best_card.name} from my hand to increase its own power!")
@@ -280,6 +306,11 @@ class InstructorCard(Card):
         """
         # BEGIN Problem 6
         readd = None
+        self.attack -= 1000
+        self.defense -= 1000
+        if self.attack >= 0 and self.defense >= 0 and self not in player.hand:
+            readd = self
+            player.hand.append(self)
         # END Problem 6
         # You should add your implementation above this.
         if readd:
