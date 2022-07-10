@@ -6,10 +6,9 @@
 
 ; high-order function
 (define (make-adder num)
-  ; (define (foo inc)
-  ;     (+ num inc)
-  ; ) ; it can't work, which not similar to Python.
-  (lambda (inc) (+ num inc)))
+  ; (lambda (inc) (+ num inc))) ; it can work too.
+  (define (foo inc) (+ num inc))
+  foo)
 
 (define (composed f g) (lambda (x) (f (g x))))
 
