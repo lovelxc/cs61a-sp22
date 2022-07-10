@@ -4,7 +4,9 @@ import os, sys
 
 nlab, nhw = 15, 10
 # add proj names you want
-proj_list = ['hog', 'cats', 'ants', 'lambdaing']
+proj_list = ['hog', 'cats', 'ants', 'lambdaing',
+    'scheme', 'scheme_stubbed'
+]
 
 
 def bash_shell(bash_command):
