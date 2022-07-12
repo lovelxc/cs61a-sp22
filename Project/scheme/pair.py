@@ -57,6 +57,14 @@ class Pair:
             return scheme_append(mapped, self.rest.flatmap(fn))
         else:
             raise TypeError('ill-formed list (cdr is a promise)')
+    
+    def to_list(self):
+        lst = []
+        pair = self
+        while pair is not nil:
+            lst.append(pair.first)
+            pair = pair.rest
+        return lst
 
 
 class nil:
@@ -77,6 +85,8 @@ class nil:
     def flatmap(self, fn):
         return self
 
+    def to_list(self):
+        return []
 
 nil = nil()  # Assignment hides the nil class; there is only one instance
 

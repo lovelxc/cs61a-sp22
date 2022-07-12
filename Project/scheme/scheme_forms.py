@@ -38,11 +38,15 @@ def do_define_form(expressions, env):
         validate_form(expressions, 2, 2)  # Checks that expressions is a list of length exactly 2
         # BEGIN PROBLEM 4
         "*** YOUR CODE HERE ***"
+        env.define(signature, scheme_eval(expressions.rest.first, env))
+        return signature
         # END PROBLEM 4
     elif isinstance(signature, Pair) and scheme_symbolp(signature.first):
         # defining a named procedure e.g. (define (f x y) (+ x y))
         # BEGIN PROBLEM 10
         "*** YOUR CODE HERE ***"
+        env.define(signature.first, do_lambda_form(Pair(signature.rest, expressions.rest), env))
+        return signature.first
         # END PROBLEM 10
     else:
         bad_signature = signature.first if isinstance(signature, Pair) else signature
@@ -59,6 +63,7 @@ def do_quote_form(expressions, env):
     validate_form(expressions, 1, 1)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    return expressions.first
     # END PROBLEM 5
 
 
@@ -87,8 +92,8 @@ def do_lambda_form(expressions, env):
     validate_formals(formals)
     # BEGIN PROBLEM 7
     "*** YOUR CODE HERE ***"
+    return LambdaProcedure(formals, expressions.rest, env)
     # END PROBLEM 7
-
 
 def do_if_form(expressions, env):
     """Evaluate an if form.
@@ -122,6 +127,13 @@ def do_and_form(expressions, env):
     """
     # BEGIN PROBLEM 12
     "*** YOUR CODE HERE ***"
+    res = None
+    while expressions is not nil:
+        res = scheme_eval(expressions.first, env)
+        print("DEBUG:", res, type(res))
+        if is_scheme_false(res): return res
+        expressions = expressions.rest
+    return res if res is not None else True
     # END PROBLEM 12
 
 
@@ -141,6 +153,13 @@ def do_or_form(expressions, env):
     """
     # BEGIN PROBLEM 12
     "*** YOUR CODE HERE ***"
+    res = None
+    while expressions is not nil:
+        res = scheme_eval(expressions.first, env)
+        print("DEBUG:", res, type(res))
+        if is_scheme_true(res): return res
+        expressions = expressions.rest
+    return res if res is not None else False
     # END PROBLEM 12
 
 
@@ -162,6 +181,9 @@ def do_cond_form(expressions, env):
         if is_scheme_true(test):
             # BEGIN PROBLEM 13
             "*** YOUR CODE HERE ***"
+            print("DEBUG:", clause.rest)
+            return eval_all(clause.rest, env)\
+              if clause.rest is not nil else test
             # END PROBLEM 13
         expressions = expressions.rest
 
@@ -244,6 +266,8 @@ def do_mu_form(expressions, env):
     validate_formals(formals)
     # BEGIN PROBLEM 11
     "*** YOUR CODE HERE ***"
+    print("DEBUG: in (do_mu_form)\t", f"{formals}\t{repr(expressions.rest)}")
+    return MuProcedure(formals, expressions.rest)
     # END PROBLEM 11
 
 

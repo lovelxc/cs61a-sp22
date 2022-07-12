@@ -35,6 +35,11 @@ def scheme_eval(expr, env, _=None):  # Optional third argument is ignored
     else:
         # BEGIN PROBLEM 3
         "*** YOUR CODE HERE ***"
+        proc = scheme_eval(first, env)
+        validate_procedure(proc)
+        args = rest.map(lambda x : scheme_eval(x, env)) # a good idea
+        # print('DEBUG:','in func(scheme_eval)\t', f'{proc}\t{args}\t{env}, ans = {scheme_apply(proc, args, env)}')
+        return scheme_apply(proc, args, env)
         # END PROBLEM 3
 
 
@@ -45,14 +50,29 @@ def scheme_apply(procedure, args, env):
     if isinstance(procedure, BuiltinProcedure):
         # BEGIN PROBLEM 2
         "*** YOUR CODE HERE ***"
+        args_list = args.to_list()
+        if procedure.expect_env:
+            args_list.append(env)
+        try:
+            res = procedure.py_func(*args_list)
+            return res
+        except TypeError:
+            raise SchemeError('incorrect number of arguments')
         # END PROBLEM 2
     elif isinstance(procedure, LambdaProcedure):
         # BEGIN PROBLEM 9
         "*** YOUR CODE HERE ***"
+        # When we call the procedure, we should based on procedure.env
+        # instead of env
+        new_frame = procedure.env.make_child_frame(procedure.formals, args)
+        return eval_all(procedure.body, new_frame)
         # END PROBLEM 9
     elif isinstance(procedure, MuProcedure):
         # BEGIN PROBLEM 11
         "*** YOUR CODE HERE ***"
+        new_frame = env.make_child_frame(procedure.formals, args)
+        print("DEBUG: MuProcedure:", f"{procedure.body}\t{new_frame}")
+        return eval_all(procedure.body, new_frame)
         # END PROBLEM 11
     else:
         assert False, "Unexpected procedure: {}".format(procedure)
@@ -74,7 +94,14 @@ def eval_all(expressions, env):
     2
     """
     # BEGIN PROBLEM 6
-    return scheme_eval(expressions.first, env)  # replace this with lines of your own code
+    expr = expressions
+    if expr == nil:
+        return None
+
+    while expr.rest is not nil:
+        scheme_eval(expr.first, env)
+        expr = expr.rest
+    return scheme_eval(expr.first, env)  # replace this with lines of your own code
     # END PROBLEM 6
 
 

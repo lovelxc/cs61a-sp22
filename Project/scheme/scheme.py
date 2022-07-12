@@ -88,7 +88,7 @@ def run(*argv):
     parser.add_argument('-load', '-i', action='store_true',
                         help='run file interactively')
     parser.add_argument('file', nargs='?',
-                        type=argparse.FileType('r'), default=None,
+                        type=argparse.FileType('r'), default='mytest.scm',
                         help='Scheme file to run')
     args = parser.parse_args()
 
