@@ -130,7 +130,7 @@ def do_and_form(expressions, env):
     res = None
     while expressions is not nil:
         res = scheme_eval(expressions.first, env)
-        print("DEBUG:", res, type(res))
+        # print("DEBUG:", res, type(res))
         if is_scheme_false(res): return res
         expressions = expressions.rest
     return res if res is not None else True
@@ -156,7 +156,7 @@ def do_or_form(expressions, env):
     res = None
     while expressions is not nil:
         res = scheme_eval(expressions.first, env)
-        print("DEBUG:", res, type(res))
+        # print("DEBUG:", res, type(res))
         if is_scheme_true(res): return res
         expressions = expressions.rest
     return res if res is not None else False
@@ -210,6 +210,12 @@ def make_let_frame(bindings, env):
     names = vals = nil
     # BEGIN PROBLEM 14
     "*** YOUR CODE HERE ***"
+    print(f"DEBUG: (make_let_frame)\tbindings:{bindings}")
+    while bindings is not nil:
+        validate_form(bindings.first, 2, 2)
+        names = Pair(bindings.first.first, names)
+        vals = Pair(scheme_eval(bindings.first.rest.first, env), vals)
+        bindings = bindings.rest
     # END PROBLEM 14
     return env.make_child_frame(names, vals)
 

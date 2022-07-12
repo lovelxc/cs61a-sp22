@@ -29,7 +29,8 @@ class Frame:
         """Define Scheme SYMBOL to have VALUE."""
         # BEGIN PROBLEM 1
         "*** YOUR CODE HERE ***"
-        assert isinstance(symbol, str), str(symbol) + ' is not a string.'
+        if not isinstance(symbol, str):
+            raise SchemeError(str(symbol) + ' is not a string.')
         self.bindings[symbol] = value
         # END PROBLEM 1
 
@@ -63,6 +64,8 @@ class Frame:
         "*** YOUR CODE HERE ***"
         frame = Frame(self)
         while formals and vals:
+            if formals.first in frame.bindings:
+                raise SchemeError("identifier '{0}' has already in bindings.".format(formals.first))
             frame.define(formals.first, vals.first)
             formals, vals = formals.rest, vals.rest
         return frame
