@@ -94,14 +94,13 @@ def eval_all(expressions, env):
     2
     """
     # BEGIN PROBLEM 6
-    expr = expressions
-    if expr == nil:
+    if expressions == nil:
         return None
-
+    expressions = expressions.map(lambda x:scheme_eval(x, env))
+    expr = expressions
     while expr.rest is not nil:
-        scheme_eval(expr.first, env)
         expr = expr.rest
-    return scheme_eval(expr.first, env)  # replace this with lines of your own code
+    return expr.first
     # END PROBLEM 6
 
 
@@ -135,13 +134,17 @@ def optimize_tail_calls(unoptimized_scheme_eval):
         return an Unevaluated containing an expression for further evaluation.
         """
         if tail and not scheme_symbolp(expr) and not self_evaluating(expr):
+            print("DEBUG: in optimized_eval (before)", expr)
             return Unevaluated(expr, env)
-
         result = Unevaluated(expr, env)
         # BEGIN PROBLEM EC
         "*** YOUR CODE HERE ***"
         while isinstance(result, Unevaluated):
-            result = unoptimized_scheme_eval(result.expr, result.env)
+            # print("DEBUG: in optimized_eval (before)", result.expr)
+            result = unoptimized_scheme_eval(result.expr, env)
+            if isinstance(result, Unevaluated):
+                print("DEBUG: in optimized_eval", result.expr)
+            # tail = True
         return result
         # END PROBLEM EC
     return optimized_eval
@@ -150,4 +153,4 @@ def optimize_tail_calls(unoptimized_scheme_eval):
 ################################################################
 # Uncomment the following line to apply tail call optimization #
 ################################################################
-scheme_eval = optimize_tail_calls(scheme_eval)
+# scheme_eval = optimize_tail_calls(scheme_eval)
