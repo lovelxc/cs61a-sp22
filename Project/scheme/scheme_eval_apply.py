@@ -25,7 +25,6 @@ def scheme_eval(expr, env, _=None):  # Optional third argument is ignored
         return env.lookup(expr)
     elif self_evaluating(expr):
         return expr
-
     # All non-atomic expressions are lists (combinations)
     if not scheme_listp(expr):
         raise SchemeError('malformed list: {0}'.format(repl_str(expr)))
@@ -139,19 +138,9 @@ def optimize_tail_calls(unoptimized_scheme_eval):
         result = Unevaluated(expr, env)
         # BEGIN PROBLEM EC
         "*** YOUR CODE HERE ***"
-        while isinstance(result, (Unevaluated, Procedure)):
-            # All non-atomic expressions are lists (combinations)
-            if not scheme_listp(result.expr):
-                raise SchemeError('malformed list: {0}'.format(repl_str(expr)))
-            first, rest = result.expr.first, result.expr.rest
-            if scheme_symbolp(first) and first in scheme_forms.SPECIAL_FORMS:
-                return scheme_forms.SPECIAL_FORMS[first](rest, env)
-            else:
-                proc = scheme_eval(first, env)
-                validate_procedure(proc)
-                result = optimized_eval(result.expr, result.env, True)
-                # args = rest.map(lambda x : unoptimized_scheme_eval(x, env)) # a good idea
-                # return scheme_apply(proc, args, env)
+        while isinstance(result, (Unevaluated,)):
+            print("DEBUG: before",expr, env)
+            result = unoptimized_scheme_eval(result.expr, result.env)
         return result
         # END PROBLEM EC
     return optimized_eval
@@ -160,4 +149,4 @@ def optimize_tail_calls(unoptimized_scheme_eval):
 ################################################################
 # Uncomment the following line to apply tail call optimization #
 ################################################################
-scheme_eval = optimize_tail_calls(scheme_eval)
+# scheme_eval = optimize_tail_calls(scheme_eval)
