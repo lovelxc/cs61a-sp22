@@ -8,10 +8,25 @@
 
 (define (get-lon city) (car (cdr (cdr city))))
 
-(define (distance city-a city-b) 'YOUR-CODE-HERE)
+(define (distance city-a city-b) 
+  (sqrt (+ 
+    (expt (- (get-lat city-a) (get-lat city-b)) 2)  
+    (expt (- (get-lon city-a) (get-lon city-b)) 2)))
+)
 
 (define (closer-city lat lon city-a city-b)
-  'YOUR-CODE-HERE)
+  (define city-c (make-city "c" lat lon))
+  (let
+    (
+      (a (distance city-a city-c))
+      (b (distance city-b city-c))
+    )
+    (if (> a b)
+        (get-name city-b)
+        (get-name city-a)
+    )
+  )  
+)
 
 ; Teacher and Student Abstractions
 (define (student-create name classes)
