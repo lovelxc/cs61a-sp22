@@ -4,29 +4,22 @@
 
 (define (get-name city) (car city))
 
-(define (get-lat city) (car (cdr city)))
+(define (get-lat city) (cadr city))
 
-(define (get-lon city) (car (cdr (cdr city))))
+(define (get-lon city) (cadr (cdr city)))
 
-(define (distance city-a city-b) 
-  (sqrt (+ 
-    (expt (- (get-lat city-a) (get-lat city-b)) 2)  
-    (expt (- (get-lon city-a) (get-lon city-b)) 2)))
-)
+(define (distance city-a city-b)
+  (sqrt
+   (+ (expt (- (get-lat city-a) (get-lat city-b)) 2)
+      (expt (- (get-lon city-a) (get-lon city-b)) 2))))
 
 (define (closer-city lat lon city-a city-b)
   (define city-c (make-city "c" lat lon))
-  (let
-    (
-      (a (distance city-a city-c))
-      (b (distance city-b city-c))
-    )
+  (let ((a (distance city-a city-c))
+        (b (distance city-b city-c)))
     (if (> a b)
         (get-name city-b)
-        (get-name city-a)
-    )
-  )  
-)
+        (get-name city-a))))
 
 ; Teacher and Student Abstractions
 (define (student-create name classes)
@@ -35,26 +28,35 @@
 (define (teacher-create name class students)
   (cons name (cons class students)))
 
-(define (student-get-name student)
-  'YOUR-CODE-HERE)
+(define (student-get-name student) (car student))
 
 (define (student-get-classes student)
-  'YOUR-CODE-HERE)
+  (cdr student))
 
-(define (teacher-get-name teacher)
-  'YOUR-CODE-HERE)
+(define (teacher-get-name teacher) (car teacher))
 
 (define (teacher-get-class teacher)
-  'YOUR-CODE-HERE)
+  (cadr teacher))
 
 (define (teacher-get-students teacher)
-  'YOUR-CODE-HERE)
+  (cdr (cdr teacher)))
 
 (define (student-attend-class student class)
-  'YOUR-CODE-HERE)
+  (student-create (student-get-name student)
+                  (cons class (student-get-classes student))))
 
 (define (teacher-hold-class teacher)
-  'YOUR-CODE-HERE)
+  ; return a updated list.
+  (define (helper students class)
+    (if (null? students)
+        '()
+        (cons (student-attend-class (car students) class)
+              (helper (cdr students) class))))
+  (let ((name (teacher-get-name teacher))
+        (class (teacher-get-class teacher)))
+    (teacher-create name
+                    class
+                    (helper (teacher-get-students teacher) class))))
 
 ; Rational Abstraction
 ; Helpers
