@@ -46,17 +46,12 @@
                   (cons class (student-get-classes student))))
 
 (define (teacher-hold-class teacher)
-  ; return a updated list.
-  (define (helper students class)
-    (if (null? students)
-        '()
-        (cons (student-attend-class (car students) class)
-              (helper (cdr students) class))))
+  ; update students info
   (let ((name (teacher-get-name teacher))
         (class (teacher-get-class teacher)))
     (teacher-create name
                     class
-                    (helper (teacher-get-students teacher) class))))
+                    (map (lambda (student) (student-attend-class student class)) (teacher-get-students teacher)))))
 
 ; Rational Abstraction
 ; Helpers
